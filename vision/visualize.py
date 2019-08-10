@@ -1,3 +1,5 @@
+import numpy
+
 from PIL import Image, ImageDraw
 import itertools
 import random
@@ -37,7 +39,7 @@ def fig2img(fig):
 
 
 def highlight_box(image, box, color = colors[0], width = defaultwidth,
-    font = None):
+                  font = None):
     """
     Highlights the bounding box on the given image.
     """
@@ -55,11 +57,11 @@ def highlight_box(image, box, color = colors[0], width = defaultwidth,
     # if occluded use dashed else use solid
     linestyle = 'dashed'
     if not box.occluded:
-        width = width * 2
+        # width = width * 2
         linestyle = 'solid'
 
     ax.add_patch(Rectangle(
-        (box[0], box[1]), box[2] - box[0], box[3] - box[1], color=color, fill=None, linestyle=linestyle, linewidth=width
+        (box[0], box[1]), box[2] - box[0] - width, box[3] - box[1] - width, color=color, fill=None, linestyle=linestyle, linewidth=width
     ))
 
     # convert to rgb
@@ -93,7 +95,7 @@ def highlight_box(image, box, color = colors[0], width = defaultwidth,
     return im
 
 def highlight_boxes(image, boxes, colors = colors, width = defaultwidth,
-    font = None):
+                    font = None):
     """
     Highlights an iterable of boxes.
     """
@@ -102,7 +104,7 @@ def highlight_boxes(image, boxes, colors = colors, width = defaultwidth,
     return image
 
 def highlight_path(images, path, color = colors[0], width = defaultwidth,
-    font = None):
+                   font = None):
     """
     Highlights a path across many images. The images must be indexable
     by the frame. Produces a generator.
@@ -119,7 +121,7 @@ def highlight_path(images, path, color = colors[0], width = defaultwidth,
         yield image, box.frame
 
 def highlight_paths(images, paths, colors = colors, width = defaultwidth,
-    font = None):
+                    font = None):
     """
     Highlights multiple paths across many images. The images must be indexable
     by the frame. Produces a generator.
