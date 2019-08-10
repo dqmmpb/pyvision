@@ -1,5 +1,3 @@
-import numpy
-
 from PIL import Image, ImageDraw
 import itertools
 import random
