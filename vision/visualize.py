@@ -1,7 +1,12 @@
-from PIL import ImageDraw
+from PIL import Image, ImageDraw
 import itertools
 import random
 import logging
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_agg import FigureCanvasAgg
+from matplotlib.patches import Rectangle
+from matplotlib.ticker import NullLocator
+import numpy
 
 logger = logging.getLogger("vision.visualize")
 
@@ -16,21 +21,55 @@ colors = ["#FF00FF",
           "#000080",
           "#800080"]
 
+# convert fig to img
+def fig2img(fig):
+    """
+    @brief Convert a Matplotlib figure to a 4D numpy array with RGBA channels and return it
+    @param fig a matplotlib figure
+    @return a numpy 3D array of RGBA values
+    """
+    canvas = FigureCanvasAgg(fig)
+    canvas.draw()
+    s, (width, height) = canvas.print_to_buffer()
+    X = numpy.frombuffer(s, numpy.uint8).reshape((height, width, 4))
+    im = Image.frombytes("RGBA", (width, height), s)
+    return im
+
+
 def highlight_box(image, box, color = colors[0], width = defaultwidth,
     font = None):
     """
     Highlights the bounding box on the given image.
     """
-    draw = ImageDraw.Draw(image)
+    # draw = ImageDraw.Draw(image)
+    fig, ax = plt.subplots(figsize=(image.width / 100.0, image.height / 100.0))
+
+    # remove margin
+    plt.gca().set_axis_off()
+    plt.subplots_adjust(top = 1, bottom = 0, right = 1, left = 0, hspace = 0, wspace = 0)
+    plt.margins(0, 0)
+    plt.gca().xaxis.set_major_locator(NullLocator())
+    plt.gca().yaxis.set_major_locator(NullLocator())
+    plt.imshow(image)
+
+    # if occluded use dashed else use solid
+    linestyle = 'dashed'
     if not box.occluded:
         width = width * 2
-    for i in range(width):
-        draw.rectangle((box[0] + i, box[1] + i, box[2] - i, box[3] - i),
-                       outline=color)
+        linestyle = 'solid'
+
+    ax.add_patch(Rectangle(
+        (box[0], box[1]), box[2] - box[0], box[3] - box[1], color=color, fill=None, linestyle=linestyle, linewidth=width
+    ))
+
+    # convert to rgb
+    im = fig2img(fig).convert('RGB')
+    draw = ImageDraw.Draw(im)
+
     if font:
         ypos = box.ytl
         for attribute in box.attributes:
-            attribute = str(attribute)
+            attribute = str(attribute).decode("utf-8")
             size = draw.textsize(attribute, font = font)
             xpos = max(box.xtl - size[0] - 3, 0)
 
@@ -50,7 +89,7 @@ def highlight_box(image, box, color = colors[0], width = defaultwidth,
             draw.text((xpos, ypos), attribute,
                       fill="white", font=font)
             ypos += size[1] + 3
-    return image
+    return im
 
 def highlight_boxes(image, boxes, colors = colors, width = defaultwidth,
     font = None):
@@ -105,7 +144,7 @@ def highlight_paths(images, paths, colors = colors, width = defaultwidth,
             except:
                 lost = False
             if not lost:
-                highlight_box(im, box, color, width, font)
+                im = highlight_box(im, box, color, width, font)
         yield im, frame
 
 def save(images, output):
