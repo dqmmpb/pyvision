@@ -64,7 +64,7 @@ def highlight_box(image, box, color = colors[0], width = defaultwidth,
 
     # convert to rgb
     im = fig2img(fig).convert('RGB')
-    fig.close()
+    plt.close(fig)
     draw = ImageDraw.Draw(im)
 
     if font:
