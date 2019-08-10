@@ -6,3 +6,4 @@ pyvision.egg-info
 *.pyc
 *.html
 .idea
+venv
