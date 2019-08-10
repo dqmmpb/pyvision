@@ -61,7 +61,7 @@ def highlight_box(image, box, color = colors[0], width = defaultwidth,
         linestyle = 'solid'
 
     ax.add_patch(Rectangle(
-        (box[0], box[1]), box[2] - box[0], box[3] - box[1], color=color, fill=None, linestyle=linestyle, linewidth=width
+        (box[0] - width * 0.5, box[1] - width * 0.5), box[2] - box[0], box[3] - box[1], color=color, fill=None, linestyle=linestyle, linewidth=width
     ))
 
     # convert to rgb
