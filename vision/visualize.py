@@ -1,3 +1,5 @@
+import numpy
+
 from PIL import Image, ImageDraw
 import itertools
 import random
@@ -6,7 +8,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_agg import FigureCanvasAgg
 from matplotlib.patches import Rectangle
 from matplotlib.ticker import NullLocator
-import numpy
+
 
 logger = logging.getLogger("vision.visualize")
 
