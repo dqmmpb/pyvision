@@ -30,7 +30,7 @@ def highlight_box(image, box, color = colors[0], width = defaultwidth,
     if font:
         ypos = box.ytl
         for attribute in box.attributes:
-            attribute = str(attribute)
+            attribute = str(attribute).decode("utf-8")
             size = draw.textsize(attribute, font = font)
             xpos = max(box.xtl - size[0] - 3, 0)
 

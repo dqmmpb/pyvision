@@ -5,3 +5,5 @@ pyvision.egg-info
 *.so
 *.pyc
 *.html
+.idea
+venv
